@@ -37,8 +37,10 @@ function App() {
       ? <UserForm token={ stateToken }
                   formRef={ refUserForm }
                   {...userData}
-                  getUsers = { getUsers }
-                  setStateUsers = { setStateUsers }
+                  updateUsers = { () => {
+                      getUsers(stateToken, setStateUsers);
+                      /*RESET: */setUserindex(0) }
+                  }
         />
       : null
 

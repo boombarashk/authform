@@ -85,7 +85,7 @@ export default class UserForm extends React.Component {
 
     handleSubmitForm(event) {
         event.preventDefault()
-        const { token, setStateUsers, getUsers } = this.props
+        const { token, updateUsers } = this.props
         const FORM = this.props.formRef.current
         const METHOD = this.state.id ? 'PATCH' : 'POST'
         let DATA = getFormData(FORM)
@@ -101,7 +101,8 @@ export default class UserForm extends React.Component {
             const msg = result.detail
             if (msg) this.setState({'serverMsg': msg})
 
-            getUsers(token, setStateUsers)
+            updateUsers()
+            this.validator.toggleDisabledBtn()
         }, METHOD, token)
     }
 
