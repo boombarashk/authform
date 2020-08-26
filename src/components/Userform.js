@@ -1,8 +1,9 @@
 import React from 'react';
 import {Input} from "./Input";
-import {fetchApp} from "../fetchUtils";
+import {fetchApp, makeId} from "../fetchUtils";
 import Validator, {USERNAME, FIRSTNAME, LASTNAME, PASSWORD} from "../Validator";
-import {resetDataNotouched} from "../formUtils";
+import {getFormData, resetDataNotouched} from "../formUtils";
+import {ServerMsg} from "./Servermsg";
 
 export default class UserForm extends React.Component {
     constructor(props) {
@@ -17,6 +18,8 @@ export default class UserForm extends React.Component {
             { name: 'is_active', type: 'checkbox', id: 'userIsActive', label: 'Active', requiredView: true},
             { name: 'is_superuser', type: 'checkbox', id: 'userIsSuper', label: 'Superuser status', readOnly: true}
         ]
+
+        this.handleSubmitForm = this.handleSubmitForm.bind(this)
     }
 
     componentDidMount() {
@@ -43,13 +46,21 @@ export default class UserForm extends React.Component {
                           changeHandler={ (event) => {this.handleInputChange(event)}}
             /> })
 
+        const serverMsg = this.state && this.state.serverMsg && (
+            <ServerMsg msg={ this.state.serverMsg }/>
+        )
+
         return (
-            <form ref={ this.props.formRef }>
+          <>
+            <form onSubmit={ this.handleSubmitForm } ref={ this.props.formRef }>
                 { inputs }
                 <div className="App-buttonBox">
                     <input className="App-button" type="submit" value="Save"/>
                 </div>
             </form>
+
+            { serverMsg }
+          </>
         )
     }
 
@@ -62,16 +73,39 @@ export default class UserForm extends React.Component {
 
             this.setState({
                 [name]: value,
-                //'serverMsg': null
+                'serverMsg': null
             });
             this.validator.checkValidByName(name)
             resetDataNotouched(target)
         }
     }
 
+    handleSubmitForm(event) {
+        event.preventDefault()
+        const { token, setStateUsers, getUsers } = this.props
+        const FORM = this.props.formRef.current
+        const METHOD = this.state.id ? 'PATCH' : 'POST'
+        let DATA = getFormData(FORM)
+        let url = 'https://emphasoft-test-assignment.herokuapp.com/api/v1/users/'
+        if (this.state.id) {
+            url = `${url}${this.state.id}/`
+        } else {
+            const ID = makeId(4)
+            DATA.id = ID
+        }
+
+        fetchApp(url, DATA, (result) => {
+            const msg = result.detail
+            if (msg) this.setState({'serverMsg': msg})
+
+            getUsers(token, setStateUsers)
+        }, METHOD, token)
+    }
+
     updateUserData(data) {
         this.setState({
             ...data
         })
+        // FIXME data-valid
     }
 }

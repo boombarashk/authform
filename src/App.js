@@ -8,15 +8,15 @@ function App() {
   const [stateToken, setToken] = useState(null)
   const [stateUsername, setUsername] = useState(null)
   const [stateUserindex, setUserindex] = useState(0)
-  const [stateUsers, setUsers] = useState([])
+  const [stateUsers, setStateUsers] = useState([])
   const [needGetUsers, setNeedGetUsers] = useState(true)
-  //const [stateServerMsg, setServerMsg] = useState(null)
+
   const refAuthForm = useRef(null)
   const refUserForm = useRef(null)
 
   if (stateToken && needGetUsers) {
       setNeedGetUsers(false)
-      getUsers(stateToken, setUsers)
+      getUsers(stateToken, setStateUsers)
   }
 
   const titleBox = stateToken
@@ -34,7 +34,12 @@ function App() {
   }
   const userData = {data: (stateUserindex > 0) ? stateUsers[stateUserindex - 1] : EMPTY_USER_INPUT }
   let userForm = stateToken
-      ? <UserForm token={ stateToken } formRef={ refUserForm } {...userData} />
+      ? <UserForm token={ stateToken }
+                  formRef={ refUserForm }
+                  {...userData}
+                  getUsers = { getUsers }
+                  setStateUsers = { setStateUsers }
+        />
       : null
 
   return (
@@ -60,12 +65,12 @@ function App() {
   );
 }
 
-function getUsers(token, setUsers) {
+function getUsers(token, setStateUsers) {
     fetch('https://emphasoft-test-assignment.herokuapp.com/api/v1/users/', {
         method: 'GET',
         headers: {'Content-Type': 'application/json;charset=utf-8', "Authorization": `Token ${token}`}
     }).then( result => result.json())
-      .then( list => { setUsers(list) })
+      .then( list => { setStateUsers(list) })
 }
 
 export default App;
