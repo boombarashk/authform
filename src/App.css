@@ -1,38 +1,146 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+* {
+  outline: none;
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+  line-height: 20px;
+  font-size: 14px;
+  font-family: sans-serif;
+  color: #3b4151;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  background: #fafafa;
+}
+
+.App-header {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  height: 44px;
+  padding-top: 20px;
+  background-color: #1b1b1b;
   color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.App-wrapper {
+  max-width: 900px;
+  padding: 0 6px;
+  text-align: left;
+  flex: 1;
+}
+.App-body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .App-link {
-  color: #61dafb;
+  color: #4990e2;
+}
+.App-link:hover {
+  color: #1f69c0;
+}
+.App-label {
+  display: block;
+  width: 80px;
+  margin-right: 6px;
+}
+.App-label--readonly {
+  color: rgba(0, 0, 0, 0.4);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App-gap {
+  height: 20px;
+  padding: 0 6px;
 }
+
+.App-inputBox {
+  margin: 20px 0;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+.App-inputText {
+  max-width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 100%;
+  line-height: 1.15;
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #d8dde7;
+}
+.App-inputText[readonly] {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.App-buttonBox {
+  padding: 0 0 20px 86px;
+}
+.App-button {
+  min-width: 80px;
+  padding: 6px 15px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  background-color: #61affe;
+}
+.App-button:hover {
+  box-shadow: 0 0 5px rgba(0,0,0,.3);;
+  cursor: pointer;
+}
+.App-button[disabled] {
+  background-color: rgba(0,0,0,.2);
+  box-shadow: none;
+  cursor: auto;
+}
+
+.App-titleBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.App-selectBox {
+    margin-left: 12px;
+}
+.App-select{
+  padding: 5px 40px 5px 10px;
+  border: 2px solid #41444e;
+  border-radius: 4px;
+}
+
+.App-required {
+  display: inline-block;
+  padding: 0 3px;
+  font-size: 16px;
+  color: red;
+}
+
+.App-errorField {
+  border-color: #f93e3e;
+  background-color: rgba(249,62,62,.1);
+}
+.App-errorMsg {
+  color: #f93e3e;
+}
+
+.App-serverMsg {
+  box-sizing: border-box;
+  padding: 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+}
+.App-serverMsg--error { border-color: #f93e3e; }
+.App-serverMsg--success { border-color: #49cc90; }
