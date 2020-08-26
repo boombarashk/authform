@@ -32,6 +32,8 @@ export default class UserForm extends React.Component {
         if (prevProps.data.id !== this.props.data.id) {
             this.updateUserData(this.props.data)
         }
+
+        this.validator.validate()
     }
 
     render() {
@@ -76,6 +78,7 @@ export default class UserForm extends React.Component {
                 'serverMsg': null
             });
             this.validator.checkValidByName(name)
+            this.validator.toggleDisabledBtn()
             resetDataNotouched(target)
         }
     }
@@ -106,6 +109,5 @@ export default class UserForm extends React.Component {
         this.setState({
             ...data
         })
-        // FIXME data-valid
     }
 }

@@ -2,6 +2,7 @@ import { getInputsForValidation } from './formUtils'
 
 const CLASSNAME_ERRORFIELD = 'App-errorField'
 const CLASSNAME_ERRORMSG = 'App-errorMsg'
+
 export const DATASET_VALID_PROP = 'data-valid'
 const getDataValid = (element) => element.dataset.valid
 const setDataValid = (element, checkValue) => {
@@ -9,6 +10,7 @@ const setDataValid = (element, checkValue) => {
         element.dataset.valid = checkValue
     }
 }
+const getElements = (form) => Array.from(form.elements).filter( element => 'valid' in element.dataset)
 
 export const USERNAMESIMPLE = 'username_simple'
 export const USERNAME = 'username'
@@ -143,12 +145,17 @@ export default class Validator {
                 }
             }
         }
-        this.toggleDisabledBtn()
     }
 
     toggleDisabledBtn() {
         if (this.submitbtn) {
             this.submitbtn.disabled = !this.valid
         }
+    }
+
+    validate(){
+        getElements(this.form).forEach(input => {
+            this.checkValidByName(input.name)
+        })
     }
 }

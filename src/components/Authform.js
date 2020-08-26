@@ -65,6 +65,7 @@ export default class AuthForm extends React.Component {
             'serverMsg': null
         });
         this.validator.checkValidByName(name)
+        this.validator.toggleDisabledBtn()
         resetDataNotouched(target)
     }
 
