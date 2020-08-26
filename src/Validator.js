@@ -49,7 +49,7 @@ export default class Validator {
         return value.length <= count
     }
 
-    required(value) {console.log(this, arguments)
+    required(value) {
         return !!value.trim().length
     }
 
