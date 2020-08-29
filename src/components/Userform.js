@@ -1,8 +1,8 @@
 import React from 'react';
 import {Input} from "./Input";
 import {fetchApp, makeId} from "../fetchUtils";
-import Validator, {USERNAME, FIRSTNAME, LASTNAME, PASSWORD} from "../Validator";
-import {getFormData, resetDataNotouched} from "../formUtils";
+import Validator, {USERNAME, FIRSTNAME, LASTNAME, PASSWORD, setDataNotouched} from "../Validator";
+import {getFormData} from "../formUtils";
 import {ServerMsg} from "./Servermsg";
 
 export default class UserForm extends React.Component {
@@ -31,9 +31,8 @@ export default class UserForm extends React.Component {
     componentDidUpdate(prevProps) {
         if (prevProps.data.id !== this.props.data.id) {
             this.updateUserData(this.props.data)
+            this.validator.validate()
         }
-
-        this.validator.validate()
     }
 
     render() {
@@ -79,7 +78,7 @@ export default class UserForm extends React.Component {
             });
             this.validator.checkValidByName(name)
             this.validator.toggleDisabledBtn()
-            resetDataNotouched(target)
+            setDataNotouched(target, false)
         }
     }
 

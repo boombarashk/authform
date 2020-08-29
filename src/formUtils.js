@@ -17,9 +17,26 @@ export const getInputsForValidation = (inputsArray) => {
     })
 }
 
-export const DATASET_TOUCH_PROP = 'data-notouched'
-export const resetDataNotouched = (element) => {
-    if (element.dataset.notouched) {
-        element.dataset.notouched = false
+export const setToken = (value) => {
+    if (value) {
+        const expiredDate = new Date(new Date().getTime() + 3600 * 1000)
+        localStorage.setItem('expiredDate', expiredDate)
+        localStorage.setItem('token', value)
+    } else {
+        localStorage.clear()
     }
 }
+export const getToken = () => {
+    const expiredDate = localStorage.getItem('expiredDate')
+    if (expiredDate) {
+        if (new Date() < new Date(expiredDate)) {
+            return localStorage.getItem('token')
+        } else {
+            localStorage.clear()
+        }
+    }
+    return null
+}
+
+export const getStorageUsername = () => localStorage.getItem('username')
+export const setStorageUsername = (name) => localStorage.setItem('username', name)

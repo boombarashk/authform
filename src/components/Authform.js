@@ -1,8 +1,8 @@
 import React from 'react';
 import {Input} from "./Input";
 import {fetchApp} from "../fetchUtils";
-import Validator, { USERNAMESIMPLE, REQUIRED } from "../Validator";
-import { getFormData, resetDataNotouched } from "../formUtils";
+import Validator, { USERNAMESIMPLE, REQUIRED, setDataNotouched } from "../Validator";
+import { getFormData, setToken as setStorageToken, setStorageUsername } from "../formUtils";
 import {ServerMsg} from "./Servermsg";
 
 export default class AuthForm extends React.Component {
@@ -19,7 +19,8 @@ export default class AuthForm extends React.Component {
     }
 
     componentDidMount() {
-        this.validator = new Validator(this.props.formRef.current, this.inputs)
+        const authForm = this.props.formRef.current
+        if (authForm) { this.validator = new Validator(authForm, this.inputs) }
     }
 
     render() {
@@ -66,7 +67,7 @@ export default class AuthForm extends React.Component {
         });
         this.validator.checkValidByName(name)
         this.validator.toggleDisabledBtn()
-        resetDataNotouched(target)
+        setDataNotouched(target, false)
     }
 
     handleSubmitForm(event) {
@@ -81,7 +82,9 @@ export default class AuthForm extends React.Component {
                 this.setState({'serverMsg': msg})
 
                 if (result.token) {
-                    this.props.setToken(result.token)
+                    setStorageToken(result.token)
+                    this.props.setStateToken(result.token)
+                    setStorageUsername(this.state.username)
                     this.props.setUsername(this.state.username)
                 }
             })

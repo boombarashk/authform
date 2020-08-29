@@ -1,13 +1,12 @@
 import React from 'react';
-import { DATASET_VALID_PROP } from "../Validator";
-import { DATASET_TOUCH_PROP } from '../formUtils'
+import { DATASET_VALID_PROP, DATASET_TOUCH_PROP } from "../Validator";
 
 export function Input(props) {
     const {id, type, name, label, readOnly, validator, requiredView} = props.opts
     const inputProps = { id, type, name, readOnly }
     if (validator) {
         inputProps[DATASET_VALID_PROP] = false
-        inputProps[DATASET_TOUCH_PROP] = true
+        inputProps[DATASET_TOUCH_PROP] = props.value.length > 0 ? false : true
     }
     const valueProps = (type === 'checkbox') ? { checked: props.value} : {value: props.value}
 

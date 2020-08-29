@@ -12,6 +12,14 @@ const setDataValid = (element, checkValue) => {
 }
 const getElements = (form) => Array.from(form.elements).filter( element => 'valid' in element.dataset)
 
+export const DATASET_TOUCH_PROP = 'data-notouched'
+const getDataNotouched = (element) => element.dataset.notouched
+export const setDataNotouched = (element, valTouched) => {
+    if (element.dataset.notouched) {
+        element.dataset.notouched = valTouched
+    }
+}
+
 export const USERNAMESIMPLE = 'username_simple'
 export const USERNAME = 'username'
 export const REQUIRED = 'required'
@@ -39,7 +47,8 @@ export default class Validator {
     get valid (){
         return this.checkers.reduce( (resultCheck, currentInput) => {
             const { fieldName } = currentInput
-            return resultCheck && getDataValid(this.form[fieldName]) === 'true'
+            const field = this.form[fieldName]
+            return resultCheck && getDataValid(field) === 'true' && getDataNotouched(field) === 'false'
         }, true )
     }
 
@@ -133,7 +142,7 @@ export default class Validator {
             for (let index = 0; index < countCheckers; index++) {
                 const checkResult = field.checkers[index](field.value)
                 setDataValid(field, checkResult)
-                if (checkResult === false) {
+                if (checkResult === false && getDataNotouched(field) !== 'true') {
                     field.classList.add(CLASSNAME_ERRORFIELD)
                     field.errorBox.classList.add(CLASSNAME_ERRORMSG)
                     field.errorBox.innerHTML = field.msgSet[index]
@@ -155,6 +164,10 @@ export default class Validator {
 
     validate(){
         getElements(this.form).forEach(input => {
+            if (input.value.length === 0) {
+                setDataNotouched(input, true)
+            }
+
             this.checkValidByName(input.name)
         })
     }
