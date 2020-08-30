@@ -2,7 +2,9 @@ export const getFormData = (form) => {
     let data = {}
     for (const input of form.elements){
         if (input.type !== 'submit' && input.type !== 'button') {
-            data[input.name] = form[input.name].value
+            data[input.name] = (input.type !== 'checkbox')
+                ? form[input.name].value
+                : form[input.name].checked
         }
     }
     return data

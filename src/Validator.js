@@ -48,7 +48,7 @@ export default class Validator {
         return this.checkers.reduce( (resultCheck, currentInput) => {
             const { fieldName } = currentInput
             const field = this.form[fieldName]
-            return resultCheck && getDataValid(field) === 'true' && getDataNotouched(field) === 'false'
+            return resultCheck && (getDataValid(field) === 'true' || getDataNotouched(field) === 'true')
         }, true )
     }
 
@@ -61,6 +61,7 @@ export default class Validator {
     }
 
     required(value) {
+        if (!value) { return false }
         return !!value.trim().length
     }
 
@@ -135,12 +136,13 @@ export default class Validator {
         })
     }
 
-    checkValidByName(fieldName) {
+    checkValidByName(fieldName, mutationValue) {
         const field = this.form[fieldName]
         if (field.checkers) {
             const countCheckers = field.checkers.length
             for (let index = 0; index < countCheckers; index++) {
-                const checkResult = field.checkers[index](field.value)
+                const checkResult = field.checkers[index]( typeof(mutationValue) === 'undefined' ? field.value : mutationValue)
+
                 setDataValid(field, checkResult)
                 if (checkResult === false && getDataNotouched(field) !== 'true') {
                     field.classList.add(CLASSNAME_ERRORFIELD)
@@ -152,6 +154,8 @@ export default class Validator {
                     field.errorBox.classList.remove(CLASSNAME_ERRORMSG)
                     field.errorBox.innerHTML = ''
                 }
+
+                if (!checkResult) { index = countCheckers }
             }
         }
     }
@@ -162,13 +166,20 @@ export default class Validator {
         }
     }
 
+    resetPropertiesByName(name, mutationValue) {
+        const field = this.form[name]
+        if (field) {
+            setDataNotouched(field, !!!mutationValue)
+            this.checkValidByName(name, mutationValue)
+        }
+    }
+
     validate(){
         getElements(this.form).forEach(input => {
-            if (input.value.length === 0) {
-                setDataNotouched(input, true)
-            }
+            setDataNotouched(input, false)
 
             this.checkValidByName(input.name)
         })
+        return this.valid
     }
 }
