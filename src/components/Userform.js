@@ -25,6 +25,8 @@ export default class UserForm extends React.Component {
     componentDidMount() {
         const userForm = this.props.formRef.current
         if (userForm) { this.validator = new Validator(userForm, this.inputs) }
+        // FIX checkbox checked:
+        this.updateUserData(this.props.data)
     }
 
     componentDidUpdate(prevProps) {
@@ -120,7 +122,7 @@ export default class UserForm extends React.Component {
                     if (msg) this.setState({'serverMsg': msg})
 
                     updateUsers()
-                    this.validator.toggleDisabledBtn()
+                    this.updateUserData(this.props.emptyUser)
                 }, METHOD, token)
             }
         })

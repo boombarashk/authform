@@ -42,6 +42,7 @@ function App() {
                       getUsers(stateToken, setStateUsers);
                       /*RESET: */setUserindex(0) }
                   }
+                  emptyUser = { EMPTY_USER_INPUT }
         />
       : null
 
