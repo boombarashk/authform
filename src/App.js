@@ -2,11 +2,12 @@ import React, { useState, useRef } from 'react';
 import AuthForm from './components/Authform'
 import UserForm from "./components/Userform";
 import { SelectUser } from "./components/SelectUser";
+import { getToken, getStorageUsername } from "./formUtils";
 import './App.css';
 
 function App() {
-  const [stateToken, setToken] = useState(null)
-  const [stateUsername, setUsername] = useState(null)
+  const [stateToken, setStateToken] = useState( getToken() )
+  const [stateUsername, setUsername] = useState( getStorageUsername() )
   const [stateUserindex, setUserindex] = useState(0)
   const [stateUsers, setStateUsers] = useState([])
   const [needGetUsers, setNeedGetUsers] = useState(true)
@@ -53,7 +54,7 @@ function App() {
       <div className="App-body">
           <div className="App-wrapper">
               <AuthForm token={ stateToken }
-                        setToken={ setToken }
+                        setStateToken={ setStateToken }
                         setUsername={ setUsername }
                         formRef={ refAuthForm }
               />

@@ -2,7 +2,7 @@ import React from 'react';
 import {Input} from "./Input";
 import {fetchApp} from "../fetchUtils";
 import Validator, { USERNAMESIMPLE, REQUIRED } from "../Validator";
-import { getFormData, resetDataNotouched } from "../formUtils";
+import { getFormData, setToken as setStorageToken, setStorageUsername } from "../formUtils";
 import {ServerMsg} from "./Servermsg";
 
 export default class AuthForm extends React.Component {
@@ -19,7 +19,8 @@ export default class AuthForm extends React.Component {
     }
 
     componentDidMount() {
-        this.validator = new Validator(this.props.formRef.current, this.inputs)
+        const authForm = this.props.formRef.current
+        if (authForm) { this.validator = new Validator(authForm, this.inputs) }
     }
 
     render() {
@@ -66,24 +67,34 @@ export default class AuthForm extends React.Component {
         });
         this.validator.checkValidByName(name)
         this.validator.toggleDisabledBtn()
-        resetDataNotouched(target)
     }
 
     handleSubmitForm(event) {
         event.preventDefault()
 
-        fetchApp('https://emphasoft-test-assignment.herokuapp.com/api-token-auth/',
-            getFormData(this.props.formRef.current), (result) => {
-                let msg = null
-                if (result['non_field_errors']) {
-                    msg = result['non_field_errors'].join('\n')
-                }
-                this.setState({'serverMsg': msg})
+        new Promise((resolve) => {
+            const resultCheck = this.validator.validate()
+            resolve(resultCheck)
+        }).then((resultCheck) => {
+            if (resultCheck) {
+                fetchApp('https://emphasoft-test-assignment.herokuapp.com/api-token-auth/',
+                    getFormData(this.props.formRef.current), (result) => {
+                        let msg = null
+                        if (result['non_field_errors']) {
+                            msg = result['non_field_errors'].join('\n')
+                        }
+                        this.setState({'serverMsg': msg})
 
-                if (result.token) {
-                    this.props.setToken(result.token)
-                    this.props.setUsername(this.state.username)
-                }
-            })
+                        if (result.token) {
+                            setStorageToken(result.token)
+                            this.props.setStateToken(result.token)
+                            setStorageUsername(this.state.username)
+                            this.props.setUsername(this.state.username)
+                        }
+                    })
+            }
+
+            this.validator.toggleDisabledBtn()
+        })
     }
 }

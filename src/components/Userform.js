@@ -1,8 +1,8 @@
 import React from 'react';
 import {Input} from "./Input";
 import {fetchApp, makeId} from "../fetchUtils";
-import Validator, {USERNAME, FIRSTNAME, LASTNAME, PASSWORD} from "../Validator";
-import {getFormData, resetDataNotouched} from "../formUtils";
+import Validator, {USERNAME, FIRSTNAME, LASTNAME, PASSWORD, setDataNotouched} from "../Validator";
+import {getFormData} from "../formUtils";
 import {ServerMsg} from "./Servermsg";
 
 export default class UserForm extends React.Component {
@@ -23,17 +23,27 @@ export default class UserForm extends React.Component {
     }
 
     componentDidMount() {
-        this.validator = new Validator(this.props.formRef.current, this.inputs)
-
-        this.updateUserData(this.props.data)
+        const userForm = this.props.formRef.current
+        if (userForm) { this.validator = new Validator(userForm, this.inputs) }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.data.id !== this.props.data.id) {
-            this.updateUserData(this.props.data)
-        }
 
-        this.validator.validate()
+            this.updateUserData(this.props.data)
+            for (let key in this.props.data) {
+                this.validator.resetPropertiesByName(key, this.props.data[key])
+            }
+        /*
+         * При чтении пользователей значение password не приходит,
+         * дополнительная обработка: */
+            if (!('password' in this.props.data)) {
+                this.updateUserData({password: ''})
+                this.validator.resetPropertiesByName('password', '')
+            }
+
+            this.validator.toggleDisabledBtn()
+        }
     }
 
     render() {
@@ -79,31 +89,41 @@ export default class UserForm extends React.Component {
             });
             this.validator.checkValidByName(name)
             this.validator.toggleDisabledBtn()
-            resetDataNotouched(target)
         }
     }
 
     handleSubmitForm(event) {
         event.preventDefault()
-        const { token, updateUsers } = this.props
-        const FORM = this.props.formRef.current
-        const METHOD = this.state.id ? 'PATCH' : 'POST'
-        let DATA = getFormData(FORM)
-        let url = 'https://emphasoft-test-assignment.herokuapp.com/api/v1/users/'
-        if (this.state.id) {
-            url = `${url}${this.state.id}/`
-        } else {
-            const ID = makeId(4)
-            DATA.id = ID
-        }
 
-        fetchApp(url, DATA, (result) => {
-            const msg = result.detail
-            if (msg) this.setState({'serverMsg': msg})
 
-            updateUsers()
-            this.validator.toggleDisabledBtn()
-        }, METHOD, token)
+        new Promise((resolve) => {
+            const resultCheck = this.validator.validate()
+            resolve(resultCheck)
+        }).then((resultCheck) => {
+
+            if (resultCheck) {
+
+                const {token, updateUsers} = this.props
+                const FORM = this.props.formRef.current
+                const METHOD = this.state.id ? 'PATCH' : 'POST'
+                let DATA = getFormData(FORM)
+                let url = 'https://emphasoft-test-assignment.herokuapp.com/api/v1/users/'
+                if (this.state.id) {
+                    url = `${url}${this.state.id}/`
+                } else {
+                    const ID = makeId(4)
+                    DATA.id = ID
+                }
+
+                fetchApp(url, DATA, (result) => {
+                    const msg = result.detail
+                    if (msg) this.setState({'serverMsg': msg})
+
+                    updateUsers()
+                    this.validator.toggleDisabledBtn()
+                }, METHOD, token)
+            }
+        })
     }
 
     updateUserData(data) {
